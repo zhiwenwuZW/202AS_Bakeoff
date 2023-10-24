@@ -21,7 +21,7 @@ public class ClassifyVibration extends PApplet {
 	int nsamples = 1024;
 	float[] spectrum = new float[bands];
 	float[] fftFeatures = new float[bands];
-	String[] classNames = {"Interaction#1", "Interaction#2", "Neutral"};
+	String[] classNames = {"Interaction#1", "Interaction#2"};
 	int classIndex = 0;
 	int dataCount = 0;
 	boolean started = false;
@@ -56,7 +56,7 @@ public class ClassifyVibration extends PApplet {
 		Sound s = new Sound(this);
 		  
 		/* select microphone device */
-		s.inputDevice(2);
+		s.inputDevice(5);
 		    
 		/* create an Input stream which is routed into the FFT analyzer */
 		fft = new FFT(this, bands);
@@ -105,7 +105,7 @@ public class ClassifyVibration extends PApplet {
 		if(classifier != null) {
 			String guessedLabel = classifier.classify(captureInstance(null));
 			
-			// Yang: add code to stabilize your classification results
+			// Yang: add code to stabilize your classification results -- set a threshold for the probabilities
 			if(started == true) {
 				if(guessedLabel == "Interaction#1") {
 					intResList.add(1);
@@ -142,8 +142,6 @@ public class ClassifyVibration extends PApplet {
 	        System.out.println("Error loading model!");
 	    }
 	}
-	
-	
 	
 	
 	public void keyPressed() {

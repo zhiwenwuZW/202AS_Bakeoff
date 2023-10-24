@@ -53,9 +53,9 @@ public class MLClassifier {
 			         */
 			         
         	
-        	classifier.setOptions(weka.core.Utils.splitOptions("-C 1.0 -L 0.0010 "
+        	classifier.setOptions(weka.core.Utils.splitOptions("-C 1.0 -L 0.0010 -M "
 			         + "-P 1.0E-12 -N 0 -V -1 -W 1 "
-			         + "-K \"weka.classifiers.functions.supportVector.PolyKernel "
+			         + "-K \"weka.classifiers.functions.supportVector.PolyKernel " 
 			         + "-C 0 -E 1.0\""));
 			
 			classifier.buildClassifier(dataset);
@@ -68,6 +68,17 @@ public class MLClassifier {
 			 e.printStackTrace();
 		}
     }
+    
+    public double[] classifyWithProbabilities(Instance instance) {
+        try {
+            // Use the classifier to obtain class probabilities
+            double[] classProbabilities = classifier.distributionForInstance(instance);
+            return classProbabilities;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public String classify(DataInstance data) {
         if(classifier == null || classattr == null) {
@@ -78,7 +89,16 @@ public class MLClassifier {
         
         try {
             int result = (int) classifier.classifyInstance(instance);
-            return classattr.value((int)result);
+            double[] classProbabilities = classifyWithProbabilities(instance);
+            // if all the probabilities are less than 70%, then classify instance as neutral
+            for (int i = 0; i < classProbabilities.length; i++) {
+                if(classProbabilities[i] > 0.99999)
+                {
+                	System.out.println(classProbabilities[i]);
+                	return classattr.value((int)result);
+                }
+            }
+            return "Neutral";
         } catch(Exception e) {
             e.printStackTrace();
             return "Error";
