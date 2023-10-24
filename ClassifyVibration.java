@@ -21,7 +21,7 @@ public class ClassifyVibration extends PApplet {
 	int nsamples = 1024;
 	float[] spectrum = new float[bands];
 	float[] fftFeatures = new float[bands];
-	String[] classNames = {"Interaction#1", "Interaction#2"};
+	String[] classNames = {"Interaction#1", "Interaction#2", "Neutral"};
 	int classIndex = 0;
 	int dataCount = 0;
 	boolean started = false;

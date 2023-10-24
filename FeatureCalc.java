@@ -6,10 +6,10 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
-
+import java.io.Serializable;
 /* A helper class to calculate quantities in ML features */
 
-public class FeatureCalc{
+public class FeatureCalc implements Serializable{
 	
 	Instances dataset;	
 	List<String> classLabels;

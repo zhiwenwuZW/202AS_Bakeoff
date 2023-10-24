@@ -8,10 +8,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Normalize;
-
+import java.io.Serializable;
 /* A wrapper class to use Weka's classifiers */
 
-public class MLClassifier {
+public class MLClassifier implements Serializable{
 	FeatureCalc featureCalc = null;
     SMO classifier = null;
     Attribute classattr;
@@ -90,11 +90,11 @@ public class MLClassifier {
         try {
             int result = (int) classifier.classifyInstance(instance);
             double[] classProbabilities = classifyWithProbabilities(instance);
-            // if all the probabilities are less than 70%, then classify instance as neutral
+            // if all the probabilities are less than 99.5%, then classify instance as neutral
             for (int i = 0; i < classProbabilities.length; i++) {
-                if(classProbabilities[i] > 0.99999)
+                if(classProbabilities[i] > 0.995)                
                 {
-                	System.out.println(classProbabilities[i]);
+                	// System.out.println(classProbabilities[i]);
                 	return classattr.value((int)result);
                 }
             }
