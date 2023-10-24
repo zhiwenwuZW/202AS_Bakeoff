@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +10,7 @@ import weka.core.Instances;
 
 /* A helper class to calculate quantities in ML features */
 
-public class FeatureCalc{
+public class FeatureCalc implements Serializable{
 	
 	Instances dataset;	
 	List<String> classLabels;
