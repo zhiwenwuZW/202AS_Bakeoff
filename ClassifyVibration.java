@@ -21,9 +21,11 @@ public class ClassifyVibration extends PApplet {
 	int nsamples = 1024;
 	float[] spectrum = new float[bands];
 	float[] fftFeatures = new float[bands];
-	String[] classNames = {"quiet", "hand drill", "whistling", "class clapping"};
+	String[] classNames = {"Interaction#1", "Interaction#2", "Neutral"};
 	int classIndex = 0;
 	int dataCount = 0;
+	boolean started = false;
+	List<Integer> intResList = new ArrayList<Integer>();
 
 	MLClassifier classifier;
 	
@@ -104,6 +106,13 @@ public class ClassifyVibration extends PApplet {
 			String guessedLabel = classifier.classify(captureInstance(null));
 			
 			// Yang: add code to stabilize your classification results
+			if(started == true) {
+				if(guessedLabel == "Interaction#1") {
+					intResList.add(1);
+				}else if(guessedLabel == "Interaction#2") {
+					intResList.add(2);
+				}else {}
+			}
 			
 			text("classified as: " + guessedLabel, 20, 30);
 		}else {
@@ -166,6 +175,33 @@ public class ClassifyVibration extends PApplet {
 			// Yang: add code to load your previously trained model
 			println("Loading model ...");
 			loadModel("model.model");
+		}
+		
+		else if (keyCode == 32) {
+			if(started == false) {
+				started = true;
+				println("start recording now");
+			}else {
+				started = false;
+				println("end recording now");
+				int count_1 = 0;
+				int count_2 = 0;
+				for(int i : intResList) {
+					if(i == 1) {
+						count_1++;
+					}else{
+						count_2++;
+					}
+				}
+				if(count_1 >= count_2 && count_1 != 0) {
+					println("Interaction#1");
+				}else if(count_1 < count_2 && count_2 != 0) {
+					println("Interaction#2");
+				}else {
+					println("Neutral");
+				}
+				intResList.clear();
+			}
 		}
 			
 		else {
