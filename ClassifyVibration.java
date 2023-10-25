@@ -21,7 +21,7 @@ public class ClassifyVibration extends PApplet {
 	int nsamples = 1024;
 	float[] spectrum = new float[bands];
 	float[] fftFeatures = new float[bands];
-	String[] classNames = {"Interaction#1", "Interaction#2", "Neutral"};
+	String[] classNames = {"Interaction#1", "Interaction#2", "Neutral", "Noise1"};
 	int classIndex = 0;
 	int dataCount = 0;
 	boolean started = false;
@@ -106,12 +106,17 @@ public class ClassifyVibration extends PApplet {
 			String guessedLabel = classifier.classify(captureInstance(null));
 			
 			// Yang: add code to stabilize your classification results -- set a threshold for the probabilities
-			if(started == true) {
-				if(guessedLabel == "Interaction#1") {
+			if(started  == true) {
+//				System.out.println(guessedLabel.equals("Interaction#1"));
+				if(guessedLabel.equals("Interaction#1")) {
+//					System.out.println("1");
 					intResList.add(1);
-				}else if(guessedLabel == "Interaction#2") {
+				}else if(guessedLabel.equals("Interaction#2")) {
 					intResList.add(2);
-				}else {}
+//					System.out.println("2");
+				}else {
+//					System.out.println("else");
+				}
 			}
 			
 			text("classified as: " + guessedLabel, 20, 30);
