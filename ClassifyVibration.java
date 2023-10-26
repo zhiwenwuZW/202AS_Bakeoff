@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 
 public class ClassifyVibration extends PApplet {
 
+	
+	
 	FFT fft;
 	AudioIn in;
 	Waveform waveform;
@@ -38,6 +40,10 @@ public class ClassifyVibration extends PApplet {
 	{for (String className : classNames){
 		trainingData.put(className, new ArrayList<DataInstance>());
 	}}
+	
+	public static void main(String[] args) {
+		PApplet.main("ClassifyVibration");
+	}
 	
 	DataInstance captureInstance (String label){
 		DataInstance res = new DataInstance();
@@ -108,20 +114,23 @@ public class ClassifyVibration extends PApplet {
 		}
 		// application interface
 		if(is_training == false) {
+			
 			if(classifier == null) {
 				loadModel("model.model");
 			}
+			String guessedLabel = classifier.classify(captureInstance(null));
 			if(started == false) {
 				text("Press Space Bar to Start", 20, 30);
 			}else {
 				// add code to stabilize classification results -- set a threshold for the probabilities
-				String guessedLabel = classifier.classify(captureInstance(null));
+				
 				if(guessedLabel.equals("Interaction#1")) {
 					intResList.add(1);
 				}else if(guessedLabel.equals("Interaction#2")) {
 					intResList.add(2);
 				}else {}
 			}
+			
 			
 			text("classified as: " + guessedLabel, 20, 30);
 		}else {
@@ -239,5 +248,7 @@ public class ClassifyVibration extends PApplet {
 			trainingData.get(classNames[classIndex]).add(captureInstance(classNames[classIndex]));
 		}
 	}
+
+
 
 }

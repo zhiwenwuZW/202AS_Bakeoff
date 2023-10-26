@@ -104,5 +104,4 @@ public class MLClassifier implements Serializable{
             return "Error";
         }
     }
-    
 }
