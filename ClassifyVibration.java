@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.LinkedList;
 
 import processing.core.PApplet;
 import processing.sound.AudioIn;
@@ -33,6 +35,7 @@ public class ClassifyVibration extends PApplet {
 	boolean started = false;
 	boolean is_training = false;
 	List<Integer> intResList = new ArrayList<Integer>();
+	Queue<Integer> count = new LinkedList<>();
 
 	MLClassifier classifier;
 	
@@ -114,20 +117,39 @@ public class ClassifyVibration extends PApplet {
 		}
 		// application interface
 		if(is_training == false) {
-			
-			if(classifier == null) {
-				loadModel("model.model");
-			}
 			if(started == false) {
 				text("Press Space Bar to Start", 20, 30);
 			}else {
 				// add code to stabilize classification results -- set a threshold for the probabilities
 				String guessedLabel = classifier.classify(captureInstance(null));
+				count.poll();
 				if(guessedLabel.equals("Interaction#1")) {
 					intResList.add(1);
+					count.offer(1);
 				}else if(guessedLabel.equals("Interaction#2")) {
 					intResList.add(2);
-				}else {}
+					count.offer(2);
+				}else {
+					count.offer(0);
+				}
+				
+				// Remove interference
+		        if (count.size() == 3) {
+		            Integer first = count.poll();
+		            Integer second = count.poll();
+		            Integer third = count.poll();
+
+		            if (second.equals(1) || second.equals(2) 
+		            	&& first.equals(0) && third.equals(0)) {
+		                intResList.remove(intResList.size()-1);
+		            }
+		            
+		            count.offer(first);
+		            count.offer(second);
+		            count.offer(third);
+		        }
+			    
+		        text("Press Space Bar to End", 20, 30);
 			}
 		}else {
 			text(classNames[classIndex], 20, 30);
@@ -210,14 +232,34 @@ public class ClassifyVibration extends PApplet {
 		}
 		
 		else if (keyCode == 32) {
+			if(classifier == null) {
+				classifier = new MLClassifier();
+				loadModel("model.model");
+			}
 			if(started == false) {
 				started = true;
+				count.offer(0);
+				count.offer(0);
+				count.offer(0);
 				println("start recording now");
 			}else {
 				started = false;
 				println("end recording now");
 				int count_1 = 0;
 				int count_2 = 0;
+				
+				// remove last special interference
+		        if (count.size() == 3) {
+		            Integer first = count.poll();
+		            Integer second = count.poll();
+		            Integer third = count.poll();
+
+		            if (third.equals(1) || third.equals(2) 
+		            	&& first.equals(0) && second.equals(0)) {
+		                intResList.remove(intResList.size()-1);
+		            }
+		        }
+				
 				for(int i : intResList) {
 					if(i == 1) {
 						count_1++;
