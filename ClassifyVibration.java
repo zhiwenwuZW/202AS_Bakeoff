@@ -8,7 +8,11 @@ import processing.sound.AudioIn;
 import processing.sound.FFT;
 import processing.sound.Sound;
 import processing.sound.Waveform;
+import java.io.File;
 import weka.core.SerializationHelper;
+//import javax.swing.*;
+//import java.awt.*;
+import javax.swing.JOptionPane;
 
 /* A class with the main function and Processing visualizations to run the demo */
 
@@ -25,6 +29,7 @@ public class ClassifyVibration extends PApplet {
 	int classIndex = 0;
 	int dataCount = 0;
 	boolean started = false;
+	boolean is_training = false;
 	List<Integer> intResList = new ArrayList<Integer>();
 
 	MLClassifier classifier;
@@ -39,10 +44,6 @@ public class ClassifyVibration extends PApplet {
 		res.label = label;
 		res.measurements = fftFeatures.clone();
 		return res;
-	}
-	
-	public static void main(String[] args) {
-		PApplet.main("ClassifyVibration");
 	}
 	
 	public void settings() {
@@ -102,21 +103,24 @@ public class ClassifyVibration extends PApplet {
 
 		fill(255);
 		textSize(30);
-		if(classifier != null) {
-			String guessedLabel = classifier.classify(captureInstance(null));
-			
-			// Yang: add code to stabilize your classification results -- set a threshold for the probabilities
-			if(started  == true) {
-//				System.out.println(guessedLabel.equals("Interaction#1"));
+		if(mousePressed && (mouseButton == RIGHT)) {
+			is_training = !is_training;
+		}
+		// application interface
+		if(is_training == false) {
+			if(classifier == null) {
+				loadModel("model.model");
+			}
+			if(started == false) {
+				text("Press Space Bar to Start", 20, 30);
+			}else {
+				// add code to stabilize classification results -- set a threshold for the probabilities
+				String guessedLabel = classifier.classify(captureInstance(null));
 				if(guessedLabel.equals("Interaction#1")) {
-//					System.out.println("1");
 					intResList.add(1);
 				}else if(guessedLabel.equals("Interaction#2")) {
 					intResList.add(2);
-//					System.out.println("2");
-				}else {
-//					System.out.println("else");
-				}
+				}else {}
 			}
 			
 			text("classified as: " + guessedLabel, 20, 30);
@@ -147,7 +151,24 @@ public class ClassifyVibration extends PApplet {
 	        System.out.println("Error loading model!");
 	    }
 	}
-	
+    public void deleteModel(String path) {
+        File file = new File(path);
+        
+        if (file.exists()) {
+            try {
+                if (file.delete()) {
+                    System.out.println("Model deleted from " + path);
+                } else {
+                    System.err.println("Cannot delete it " + path);
+                }
+            } catch (SecurityException e) {
+                System.err.println("no access to " + path);
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("Model doesn't exist" + path);
+        }
+    }
 	
 	public void keyPressed() {
 		
@@ -170,14 +191,17 @@ public class ClassifyVibration extends PApplet {
 			// Yang: add code to save your trained model for later use
 			println("Saving model ...");
 			saveModel("model.model");
-			
-			
 		}
 		
 		else if (key == 'l') {
 			// Yang: add code to load your previously trained model
 			println("Loading model ...");
 			loadModel("model.model");
+		}
+		
+		else if(key == 'd') {
+			println("Deleting model...");
+			deleteModel("model.model");
 		}
 		
 		else if (keyCode == 32) {
@@ -196,14 +220,18 @@ public class ClassifyVibration extends PApplet {
 						count_2++;
 					}
 				}
-				if(count_1 >= count_2 && count_1 != 0) {
-					println("Interaction#1");
-				}else if(count_1 < count_2 && count_2 != 0) {
-					println("Interaction#2");
-				}else {
-					println("Neutral");
-				}
-				intResList.clear();
+	            String resultMessage;
+	            if (count_1 >= count_2 && count_1 != 0) {
+	                resultMessage = "Interaction#1";
+	            } else if (count_1 < count_2 && count_2 != 0) {
+	                resultMessage = "Interaction#2";
+	            } else {
+	                resultMessage = "Neutral";
+	            }
+	            intResList.clear();
+
+	            // Display the result in a GUI dialog
+	            JOptionPane.showMessageDialog(null, "Result: " + resultMessage, "Classification Result", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 			
