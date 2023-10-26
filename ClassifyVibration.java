@@ -118,21 +118,17 @@ public class ClassifyVibration extends PApplet {
 			if(classifier == null) {
 				loadModel("model.model");
 			}
-			String guessedLabel = classifier.classify(captureInstance(null));
 			if(started == false) {
 				text("Press Space Bar to Start", 20, 30);
 			}else {
 				// add code to stabilize classification results -- set a threshold for the probabilities
-				
+				String guessedLabel = classifier.classify(captureInstance(null));
 				if(guessedLabel.equals("Interaction#1")) {
 					intResList.add(1);
 				}else if(guessedLabel.equals("Interaction#2")) {
 					intResList.add(2);
 				}else {}
 			}
-			
-			
-			text("classified as: " + guessedLabel, 20, 30);
 		}else {
 			text(classNames[classIndex], 20, 30);
 			dataCount = trainingData.get(classNames[classIndex]).size();
